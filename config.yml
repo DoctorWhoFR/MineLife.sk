@@ -1,0 +1,13 @@
+ServerName: "&6[&4Mine&cLife&6]"
+
+# Defautl Config
+StartMoney: 100
+
+# Item Price:
+
+# Pickaxe Seller
+WoodenPickaxe: 200
+StonePickaxe: 300
+IronPickaxe: 400
+GoldPickaxe: 500
+DiamondPickaxe: 600
