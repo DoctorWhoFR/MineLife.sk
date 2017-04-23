@@ -1,0 +1,73 @@
+on load:
+	if {MineLife_ServerDownloadFile} is not set:
+		download file from "" to file ""
+
+on join:
+	if {MineLife_%player%_money} is not set:
+		set {MineLife_%player%_money} to 100
+		set {MineLife_%player%_licence::*} to ""
+		set {MineLife_%player%_cop} to false
+		set {MineLife_%player%_rebel} to false
+
+function SpawnNPC(player: player, msg: text):
+	spawn a villager at position of {_player}
+	set name of spawned villager to "%{_msg}%"
+	apply slowness 999 to spawned villager for 999 days
+	apply regeneration 999 to spawned villager for 999 days
+	send magic hotbar to {_player} with "&bVillager &c%{_msg}% &bSuccessful spawned!" for 10
+
+on damage of villager:
+	cancel event
+
+on inventory close:
+	set {%player%_buy} to false
+
+on rightclick on villager:
+	cancel event
+	set {%player%_buy} to true
+	if name of villager is "&6COP Seller":
+		open chest with 1 rows named "&6NPC MENU" to player
+		format slot 2 of player with wood pickaxe named "&6Wood Pickaxe" with lore "&4Prix: &c%{MineLife_WoodPickaxePrice}%$" to close then run [make player execute command "/altislife buy WoodPickaxe"]
+		format slot 3 of player with stone pickaxe named "&6Stone Pickaxe" with lore "&4Prix: &c%{MineLife_StonePickaxePrice}%$" to close then run [make player execute command "/altislife buy StonePickaxe"]
+		format slot 4 of player with iron pickaxe named "&6Iron Pickaxe" with lore "&4Prix: &c%{MineLife_IronPickaxePrice}%$" to close then run [make player execute command "/altislife buy IronPickaxe"]
+		format slot 5 of player with gold pickaxe named "&6Gold Pickaxe" with lore "&4Prix: &c%{MineLife_GoldPickaxePrice}%$" to close then run [make player execute command "/altislife buy GoldPickaxe"]
+		format slot 6 of player with diamond pickaxe named "&6Diamond Pickaxe" with lore "&4Prix: &c%{MineLife_DiamondPickaxePrice}%$" to close then run [make player execute command "/altislife buy DiamondPickaxe"]
+
+	if player has permission "npc.remove":
+		if player is sneaking:
+			delete event-entity
+			send magic hotbar to player with "&bVillager Successful Removed" for 10
+
+command /minelife [<text>] [<text>]:
+	trigger:
+		if arg 1 is not "buy" or "npc":
+			send "" to player
+		if arg 1 is "buy":
+			if {MineLife_%player%_buy} is true:
+				if arg 2 is "StonePickaxe":
+					if {MineLife_%player%_money} >= 100:
+			else:
+				send magic hotbar to player with "&cYou can't do that dude!" for 10
+		if arg 1 is "npc":
+			if arg 2 is not set:
+				open chest with 1 rows named "&6NPC MENU" to player
+				format slot 1 of player with diamond sword named "&6COP Seller" to close then run [make player execute command "/altislife npc cop"]
+				format slot 2 of player with stone pickaxe named "&6PICKAXE Seller" to close then run [make player execute command "/altislife npc pickaxe"]
+				format slot 3 of player with stone sword named "&6WEAPON Seller" to close then run [make player execute command "/altislife npc weapon"]
+				format slot 4 of player with paper named "&aNPC LIST" to close then run [make player execute command "/altislife npc list"]
+				format slot 5 of player with glass bottle named "&6GENERAL Store" to close then run [make player execute command "/altislife npc general"]
+				format slot 6 of player with book named "&6LICENCE Seller" to close then run [make player execute command "/altislife npc licence"]
+				format slot 7 of player with golden sword named "&6ILLEGAL Seller" to close then run [make player execute command "/altislife npc illegal"]
+			else:
+				if arg 2 is "cop":
+					SpawnNPC(player, "&6COP Seller")
+				if arg 2 is "pickaxe":
+					SpawnNPC(player, "&6Pickaxe Seller")
+				if arg 2 is "weapon":
+					SpawnNPC(player, "&6Weapon Seller")
+				if arg 2 is "general":
+					SpawnNPC(player, "&6General Store")
+				if arg 2 is "licence":
+					SpawnNPC(player, "&6Licence Seller")
+				if arg 2 is "illegal":
+					SpawnNPC(player, "&6Illegal Seller")
